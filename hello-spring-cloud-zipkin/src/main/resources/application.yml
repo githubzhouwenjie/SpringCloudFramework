@@ -1,0 +1,33 @@
+eureka:
+  instance:
+    prefer-ip-address:  true  #将自己的ip地址注册到Eureka服务中
+    instance-id: ${spring.cloud.client.ip-address}:${server.port} #指定实例id
+  client:
+    service-url:
+      defaultZone: http://localhost:7080/eureka/
+
+management:
+  metrics:
+    web:
+      server:
+        auto-time-requests: 'false'
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: ALWAYS
+
+server:
+  port: '9411'
+spring:
+  application:
+    name: hello-spring-cloud-zipkin
+#  boot:
+#    admin:
+#      client:
+#        url:
+#        - http://localhost:8084
+
+

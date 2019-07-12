@@ -1,0 +1,63 @@
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:7080/eureka/
+
+server:
+  port: 8770
+spring:
+  application:
+    name: service-gateway
+  zipkin:
+    base-url: http://localhost:9411
+  boot: 
+    admin:
+      client:
+        url:
+        - http://localhost:8084
+  cloud:
+    gateway: 
+      discovery: 
+        locator: 
+          # 是否可以通过其他服务的serviceId来转发到具体的服务实例。默认为false
+          # 为true,自动创建路由,路由访问方式：http://Gateway_HOST:Gateway_PORT/大写的serviceId/**，其中微服务应用名默认大写访问
+          enabled: true
+      routes: 
+      - id: service-feign
+        #lb代表从注册中心获取服务
+        uri: lb://service-feign
+#        uri: http://localhost:8083
+        predicates: #谓词 指的是一些匹配规则，可以通过（域名，参数，cookie，请求头，时间）等规则来进行转发
+        #转发该路径
+          - Method=GET,POST
+          - Path=/feign/**
+        #是否去掉前缀（第一个目录）
+        filters:
+          - StripPrefix=1
+#          - SetPath=/
+#      - id: service-client
+#        uri: lb://service-client
+#        predicates: 
+#          - path=/client/**
+#        filters:
+          #- StripPrefix=1
+#          - SetPath=/  
+          - name: Hystrix       #熔断器
+            args: 
+              name: authHystrixCommand
+              fallbackUri: forward:/hystrixTimeout
+          - name: Retry
+            args: 
+              retries: 3 #重试次数，不包含本次，默认3
+              status: 404 #重试response code 默认无
+              statusSeries: 500 #重试response code的系列
+              method: GET #重试的请求 ，默认GET
+        
+        
+        
+        
+logging:
+  level:
+    org.springframework.cloud.gateway: debug
+        
+        

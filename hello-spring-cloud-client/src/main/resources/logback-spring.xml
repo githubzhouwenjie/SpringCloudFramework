@@ -1,0 +1,161 @@
+﻿<configuration>
+
+	<springProperty scope="context" name="logPath" source="log.path" defaultValue="logs/"/>
+	<property name="LOG_HOME" value="${logPath}"></property>
+
+	<springProperty scope="context" name="logName" source="log.name" defaultValue="service-client"/>
+	<property name="LOG_NAME" value="${logName}"></property>
+
+	<conversionRule conversionWord="clr" converterClass="org.springframework.boot.logging.logback.ColorConverter" />
+	<conversionRule conversionWord="wex" converterClass="org.springframework.boot.logging.logback.WhitespaceThrowableProxyConverter" />
+	<conversionRule conversionWord="wEx" converterClass="org.springframework.boot.logging.logback.ExtendedWhitespaceThrowableProxyConverter" />
+    <!-- 写入文件的日志格式模板 -->
+	<property name="FILE_LOG_PATTERN" value="${FILE_LOG_PATTERN:-%d{yyyy-MM-dd HH:mm:ss.SSS} ${LOG_LEVEL_PATTERN:-%5p} ${PID:- } --- [%t] %-40.40logger{39} : %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}}"/>
+    <!-- 控制日志打印模板 -->
+    <property name="CONSOLE_LOG_PATTERN" value="${CONSOLE_LOG_PATTERN:-%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(${LOG_LEVEL_PATTERN:-%5p}) %clr(${PID:- }){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}}"/>
+
+
+	<include resource="org/springframework/boot/logging/logback/defaults.xml" />
+	<include resource="org/springframework/boot/logging/logback/console-appender.xml" />
+
+    <!-- 控制台设置 -->
+	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+		<layout class="ch.qos.logback.classic.PatternLayout">
+			<pattern>${CONSOLE_LOG_PATTERN}</pattern>
+		</layout>
+	</appender>
+
+	<appender name="INFO_FILE"
+			  class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+			<FileNamePattern>${LOG_HOME}/${LOG_NAME}/${LOG_NAME}.%d{yyyy-MM-dd}/${LOG_NAME}-info.%d{yyyy-MM-dd}.%i.log</FileNamePattern>
+			<!--日志文件保留天数-->
+			<MaxHistory>90</MaxHistory>
+			<maxFileSize>10MB</maxFileSize>
+		</rollingPolicy>
+		<encoder>
+			<pattern>
+				${FILE_LOG_PATTERN}
+			</pattern>
+		</encoder>
+		<filter class="ch.qos.logback.classic.filter.LevelFilter">
+			<level>INFO</level>
+			<onMatch>ACCEPT</onMatch>
+			<onMismatch>DENY</onMismatch>
+		</filter>
+	</appender>
+
+	<appender name="DEBUG_FILE"
+			  class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <FileNamePattern>${LOG_HOME}/${LOG_NAME}/${LOG_NAME}.%d{yyyy-MM-dd}/${LOG_NAME}-debug.%d{yyyy-MM-dd}.%i.log</FileNamePattern>
+			<!--日志文件保留天数-->
+			<MaxHistory>90</MaxHistory>
+			<maxFileSize>10MB</maxFileSize>
+		</rollingPolicy>
+		<encoder>
+			<pattern>
+				${FILE_LOG_PATTERN}
+			</pattern>
+		</encoder>
+		<filter class="ch.qos.logback.classic.filter.LevelFilter">
+			<level>DEBUG</level>
+			<onMatch>ACCEPT</onMatch>
+			<onMismatch>DENY</onMismatch>
+		</filter>
+	</appender>
+
+
+	<appender name="WARN_FILE"
+			  class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <FileNamePattern>${LOG_HOME}/${LOG_NAME}/${LOG_NAME}.%d{yyyy-MM-dd}/${LOG_NAME}-warn.%d{yyyy-MM-dd}.%i.log</FileNamePattern>
+			<!--日志文件保留天数-->
+			<MaxHistory>90</MaxHistory>
+			<maxFileSize>10MB</maxFileSize>
+		</rollingPolicy>
+		<encoder>
+			<pattern>
+				${FILE_LOG_PATTERN}
+			</pattern>
+		</encoder>
+		<filter class="ch.qos.logback.classic.filter.LevelFilter">
+			<level>WARN</level>
+			<onMatch>ACCEPT</onMatch>
+			<onMismatch>DENY</onMismatch>
+		</filter>
+	</appender>
+
+
+
+	<appender name="ERROR_FILE"
+			  class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <FileNamePattern>${LOG_HOME}/${LOG_NAME}/${LOG_NAME}.%d{yyyy-MM-dd}/${LOG_NAME}-error.%d{yyyy-MM-dd}.%i.log</FileNamePattern>
+			<!--日志文件保留天数-->
+			<MaxHistory>90</MaxHistory>
+			<maxFileSize>10MB</maxFileSize>
+		</rollingPolicy>
+		<encoder>
+			<pattern>
+				${FILE_LOG_PATTERN}
+			</pattern>
+		</encoder>
+		<filter class="ch.qos.logback.classic.filter.LevelFilter">
+			<level>ERROR</level>
+			<onMatch>ACCEPT</onMatch>
+			<onMismatch>DENY</onMismatch>
+		</filter>
+	</appender>
+
+
+
+	<appender name="TRACE_FILE"
+			  class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <FileNamePattern>${LOG_HOME}/${LOG_NAME}/${LOG_NAME}.%d{yyyy-MM-dd}/${LOG_NAME}-trace.%d{yyyy-MM-dd}.%i.log</FileNamePattern>
+			<!--日志文件保留天数-->
+			<MaxHistory>90</MaxHistory>
+			<maxFileSize>10MB</maxFileSize>
+		</rollingPolicy>
+		<encoder>
+			<pattern>
+				${FILE_LOG_PATTERN}
+			</pattern>
+		</encoder>
+		<filter class="ch.qos.logback.classic.filter.LevelFilter">
+			<level>TRACE</level>
+			<onMatch>ACCEPT</onMatch>
+			<onMismatch>DENY</onMismatch>
+		</filter>
+	</appender>
+
+
+
+	<appender name="ALL_FILE"
+			  class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <FileNamePattern>${LOG_HOME}/${LOG_NAME}/${LOG_NAME}.%d{yyyy-MM-dd}/${LOG_NAME}-all.%d{yyyy-MM-dd}.%i.log</FileNamePattern>
+			<!--日志文件保留天数-->
+			<MaxHistory>90</MaxHistory>
+			<maxFileSize>10MB</maxFileSize>
+		</rollingPolicy>
+		<encoder>
+			<pattern>
+				${FILE_LOG_PATTERN}
+			</pattern>
+		</encoder>
+	</appender>
+
+	<logger name="com.hx.xcshop.models.mapper" level="DEBUG"/>
+
+	<root level="INFO">
+		<appender-ref ref="INFO_FILE" />
+		<appender-ref ref="DEBUG_FILE" />
+		<appender-ref ref="WARN_FILE" />
+		<appender-ref ref="ERROR_FILE" />
+		<appender-ref ref="TRACE_FILE" />
+		<appender-ref ref="ALL_FILE" />
+		<appender-ref ref="STDOUT" />
+	</root>
+</configuration>

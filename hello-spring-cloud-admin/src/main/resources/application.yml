@@ -1,0 +1,49 @@
+eureka:
+  instance:
+    leaseRenewalIntervalInSeconds: 10
+    health-check-url-path: /actuator/health
+    instance-id: ${spring.cloud.client.ip-address}:${server.port} #指定实例id
+    prefer-ip-address: true
+    metadata-map:
+      user.name: ${spring.security.user.name}  #用户名和密码必须和security下配置的用户名和密码相同，否则启动后服务端是DOWN的状态
+      user.password: ${spring.security.user.password}
+  client:
+    registryFetchIntervalSeconds: 5
+    service-url:
+      defaultZone: http://localhost:7080/eureka/
+#SpringBootAdmin 显示图配置
+management:
+  endpoint:
+    health:
+      show-details: ALWAYS
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+#          -health
+#          -info
+          
+          
+server:
+  port: '8084'
+  
+spring: 
+  application:
+    name: hello-spring-cloud-admin
+  #zipkin路由地址
+  zipkin:
+    base-url: http://localhost:9411
+  #zipkin，Sleuth 默认采样算法的实现是 Reservoir sampling，具体的实现类是 PercentageBasedSampler，默认的采样比例为:
+  #0.1，即 10%。我们可以通过 spring.sleuth.sampler.probability 来设置，所设置的值介于 0 到 1 之间，1 则表示全部采集
+  sleuth:
+    sampler:
+      probability: 1.0
+  #配置SpringBootAdmin 是否需要登入时需要密码 （insecure：不需要 ，secure：需要）
+  profiles:
+    active:
+      - secure
+  #SpringBootAdmin 登入时的账号和密码
+  security:
+    user:
+      name: user
+      password: 123456

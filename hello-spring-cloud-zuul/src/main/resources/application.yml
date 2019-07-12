@@ -1,0 +1,70 @@
+eureka:
+  instance:
+    prefer-ip-address:  true  #将自己的ip地址注册到Eureka服务中
+    instance-id: ${spring.cloud.client.ip-address}:${server.port} #指定实例id
+  client:
+    service-url:
+      defaultZone: http://localhost:7080/eureka/
+server:
+  port: 8769
+spring:
+  application:
+    name: service-zuul
+  zipkin:
+    base-url: http://localhost:9411
+  #zipkin，Sleuth 默认采样算法的实现是 Reservoir sampling，具体的实现类是 PercentageBasedSampler，默认的采样比例为:
+  #0.1，即 10%。我们可以通过 spring.sleuth.sampler.probability 来设置，所设置的值介于 0 到 1 之间，1 则表示全部采集
+  sleuth:
+    sampler:
+      probability: 1.0
+#  boot:
+#    admin:
+#      client:
+#        url:
+#        - http://localhost:8084
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: ALWAYS
+
+zuul:
+  #限流 https://ken.io/note/spring-cloud-zuul-ratelimiter-quickstart
+  #配置表示启用限流策略，并且所有服务在3秒内只能有1次请求且所有请求时间总和不得超过2秒
+  ratelimit:
+    enabled: true
+      repository: REDIS #使用redis存储，一定要大写！
+    default-policy:
+      limit: 1
+      quota: 2
+      refresh-interval: 3
+      type:
+        - user
+        - origin
+        - url
+  prefix: /api
+  routes:
+    api-a:
+      path: /feign/**
+      serviceId: service-feign
+      retryable: true   #开启重试
+    api-b:
+      path: /client/**
+      serviceId: service-client
+      retryable: true   #开启重试
+
+
+#重试算法 MaxAutoRetries +  MaxAutoRetriesNextServer + (MaxAutoRetries * MaxAutoRetriesNextServer  )
+ribbon:
+  MaxAutoRetries: 2                 #同一实例上的最大重试次数, 默认值为0. 不包括首次调用(需要负载的情况下触发)
+  MaxAutoRetriesNextServer: 1       #重试其他实例的最大重试次数, 不包括第一次选的实例. 默认为1(需要负载的情况下触发)
+  ReadTimeout: 10000                #请求处理的超时时间（我们是通过ServerId去找服务的，所以超时策略需要通过ribbon）
+  ConnectTimeout: 10000             #请求连接的超时时间（我们是通过ServerId去找服务的，所以超时策略需要通过ribbon）
+  OkToRetryOnAllOperations: true    #是否所有操作执行重试, 默认值为false, 只重试`GET`请求
+  MaxTotalHttpConnections: 500      #最大连接数
+  MaxConnectionsPerHost: 100        #每个host的最大连接数
+

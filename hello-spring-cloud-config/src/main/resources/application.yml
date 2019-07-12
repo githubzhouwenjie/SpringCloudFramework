@@ -1,0 +1,62 @@
+eureka:
+  instance:
+    prefer-ip-address:  true  #将自己的ip地址注册到Eureka服务中
+    instance-id: ${spring.cloud.client.ip-address}:${server.port} #指定实例id
+  client:
+    service-url:
+      defaultZone: http://localhost:7080/eureka/
+
+server:
+  port: '8888'
+spring:
+  application:
+    name: hello-spring-cloud-config
+  cloud:
+    config:
+      # 配置仓库的分支
+      label: master
+      server:
+        git:
+          #配置 Git 仓库地址（GitHub、GitLab、码云 ...）
+          uri: https://github.com/githubshequ/spring-cloud-config
+          #配置仓库路径（存放配置文件的目录）
+          search-paths: config-client
+          username:
+          password:
+    #消息总线配置
+    bus:
+      enabled: true
+      trace:
+        enabled: true
+      refresh:
+        enabled: true  #开启总线消息更新功能
+
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+    publisher-confirms: true
+    virtual-host: /
+    publisher-returns: true
+    listener:
+      simple:
+        acknowledge-mode: AUTO
+
+  zipkin:
+    base-url: http://localhost:9411
+  #zipkin，Sleuth 默认采样算法的实现是 Reservoir sampling，具体的实现类是 PercentageBasedSampler，默认的采样比例为:
+  #0.1，即 10%。我们可以通过 spring.sleuth.sampler.probability 来设置，所设置的值介于 0 到 1 之间，1 则表示全部采集
+  sleuth:
+    sampler:
+      probability: 1.0
+
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: ALWAYS
